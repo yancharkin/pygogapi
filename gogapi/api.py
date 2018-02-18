@@ -1,8 +1,13 @@
+import sys
 import json
 import re
 import logging
-import html.parser
 import zlib
+
+if sys.version_info[0] == 2:
+    import HTMLParser as html_parser
+elif sys.version_info[0] == 3:
+    import html.parser as html_parser
 
 import requests
 
@@ -16,8 +21,6 @@ GOGDATA_RE = re.compile(r"gogData\.?(.*?) = (.+);")
 CLIENT_VERSION = "1.2.17.9" # Just for their statistics
 USER_AGENT = "GOGGalaxyClient/{} pygogapi/0.1".format(CLIENT_VERSION)
 REQUEST_RETRIES = 3
-
-
 PRODUCT_EXPANDABLE = [
     "downloads", "expanded_dlcs", "description", "screenshots", "videos",
     "related_products", "changelog"
@@ -28,16 +31,12 @@ CURRENCY_CODES = [
     "USD", "EUR", "GBP", "AUD", "RUB", "PLN", "CAD", "CHF", "NOK", "SEK", "DKK"
 ]
 
-
-
-
-
 def find_scripts(site):
     parser = ScriptParser()
     parser.feed(site)
     return parser.scripts
 
-class ScriptParser(html.parser.HTMLParser):
+class ScriptParser(html_parser.HTMLParser):
     def __init__(self):
         super().__init__()
         self.last_tag = None
@@ -49,8 +48,6 @@ class ScriptParser(html.parser.HTMLParser):
     def handle_data(self, data):
         if self.last_tag == "script":
             self.scripts.append(data)
-
-
 
 class GogApi:
     def __init__(self, token=None):
@@ -109,7 +106,10 @@ class GogApi:
     def post(self, *args, **kwargs):
         return self.request("POST", *args, **kwargs)
 
-    def request_json(self, *args, compressed=False, **kwargs):
+    # FIX Not working in python2. Investigate if it's realy usefull argument
+    #~ def request_json(self, *args, compressed=False, **kwargs):
+    def request_json(self, *args, **kwargs):
+        compressed = False # :(
         resp = self.request(*args, **kwargs)
         if not compressed:
             if DEBUG_JSON:

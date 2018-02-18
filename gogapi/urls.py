@@ -1,5 +1,8 @@
-import urllib.parse
-
+import sys
+if sys.version_info[0] == 2:
+    from urlparse import urljoin
+elif sys.version_info[0] == 3:
+    from urllib.parse import urljoin as urljoin
 
 web_config = {
     "game": "/game/{}",
@@ -105,7 +108,7 @@ gog_servers = {
 def web(url_id, *args, **kwargs):
     host_url = gog_servers["embed"]
     api_path = web_config[url_id]
-    url = urllib.parse.urljoin(host_url, api_path)
+    url = urljoin(host_url, api_path)
     url_args = url.format(*args, **kwargs)
     return url_args
 
@@ -113,6 +116,6 @@ def galaxy(url_id, *args, **kwargs):
     url_config = galaxy_config[url_id]
     host_id, api_path = url_config.split(':', 1)
     host_url = gog_servers[host_id]
-    url = urllib.parse.urljoin(host_url, api_path)
+    url = urljoin(host_url, api_path)
     url_args = url.format(*args, **kwargs)
     return url_args

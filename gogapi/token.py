@@ -1,8 +1,20 @@
-import urllib.parse
-import webbrowser
-import json
-from datetime import datetime, timezone, timedelta
+import sys
 import requests
+import json
+import pytz
+from datetime import datetime, timedelta
+
+if sys.version_info[0] == 2:
+    import time
+    from urllib import quote as urlquote
+    def create_timestamp(dt):
+        timestamp = int(time.mktime(dt.timetuple()) + dt.microsecond / 1000000.0)
+        return timestamp
+elif sys.version_info[0] == 3:
+    from urllib.parse import quote as urlquote
+    def create_timestamp(dt):
+        timestamp = int(dt.timestamp())
+        return timestamp
 
 from gogapi.base import ApiError
 from gogapi import urls
@@ -14,7 +26,7 @@ REDIRECT_URL = "https://embed.gog.com/on_login_success?origin=client"
 
 
 def get_auth_url():
-    redirect_url_quoted = urllib.parse.quote(REDIRECT_URL)
+    redirect_url_quoted = urlquote(REDIRECT_URL)
     return urls.galaxy(
         "auth", client_id=CLIENT_ID, redir_uri=redirect_url_quoted)
 
@@ -33,9 +45,9 @@ class Token:
         self.user_id = token_data["user_id"]
         if "created" in token_data:
             self.created = datetime.fromtimestamp(
-                token_data["created"], tz=timezone.utc)
+                token_data["created"], pytz.utc)
         else:
-            self.created = datetime.now(tz=timezone.utc)
+            self.created = datetime.now(pytz.utc)
 
     def get_data(self):
         token_data = {
@@ -46,7 +58,7 @@ class Token:
             "session_id": self.session_id,
             "token_type": self.token_type,
             "user_id": self.user_id,
-            "created": int(self.created.timestamp())
+            "created": create_timestamp(self.created)
         }
         return token_data
 
@@ -61,12 +73,19 @@ class Token:
         with open(filename, "w") as f:
             json.dump(self.get_data(), f, indent=2, sort_keys=True)
 
-    def from_file(filename):
+    # FIX Have no idea what I'm doing, but it works (for now) in boty python 2 & 3 :)
+    #def from_file(filename):
+    @classmethod
+    def from_file(*args):
+        filename = args[1]
         token = Token()
         token.load(filename)
         return token
 
-    def from_code(login_code):
+    #def from_code(login_code):
+    @classmethod
+    def from_code(*args):
+        login_code = args[1]
         token_query = {
             "client_id": CLIENT_ID,
             "client_secret": CLIENT_SECRET,
@@ -91,4 +110,4 @@ class Token:
 
     def expired(self, margin=timedelta(seconds=60)):
         expires_at = self.created + self.expires_in
-        return (datetime.now(timezone.utc) - expires_at) > margin
+        return (datetime.now(pytz.utc) - expires_at) > margin
