@@ -9,9 +9,9 @@ logger = logging.getLogger("gogapi")
 class GogError(Exception):
     pass
 
-class ApiError(GogError):
+class ApiError(GogError, object):
     def __init__(self, error, description):
-        super().__init__()
+        super(ApiError, self).__init__()
         self.error = error
         self.description = description
 

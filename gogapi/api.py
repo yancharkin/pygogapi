@@ -36,9 +36,9 @@ def find_scripts(site):
     parser.feed(site)
     return parser.scripts
 
-class ScriptParser(html_parser.HTMLParser):
+class ScriptParser(html_parser.HTMLParser, object):
     def __init__(self):
-        super().__init__()
+        super(ScriptParser, self).__init__()
         self.last_tag = None
         self.scripts = []
 

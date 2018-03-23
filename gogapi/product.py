@@ -111,9 +111,9 @@ def parse_features(api, features_data):
     return feature_list
 
 
-class Product(GogObject):
+class Product(GogObject, object):
     def __init__(self, api, product_id, slug=None):
-        super().__init__(api)
+        super(Product, self).__init__(api)
         self.id = int(product_id)
         if slug is not None:
             self.slug = slug
@@ -375,9 +375,9 @@ class Price:
         return "Price(base={!r}, final={!r}, symbol={!r}, promo_id={!r})"
 
 
-class Series(GogObject):
+class Series(GogObject, object):
     def __init__(self, api, series_data):
-        super().__init__(api)
+        super(Series, self).__init__(api)
         self.load_series(series_data)
 
     def load_series(self, series_data):
@@ -392,9 +392,9 @@ class Series(GogObject):
             self.id, self.name, self.price, self.products)
 
 
-class Reviews(GogObject):
+class Reviews(GogObject, object):
     def __init__(self, api, reviews_data):
-        super().__init__(api)
+        super(Reviews, self).__init__(api)
         self.load_reviews(reviews_data)
 
     def load_reviews(self, reviews_data):
@@ -406,35 +406,35 @@ class Reviews(GogObject):
                 self.entries.append(Review(self.api, review_entry))
 
 
-class Review(GogObject):
+class Review(GogObject, object):
     def __init__(self, api, review_data):
-        super().__init__(api)
+        super(Review, self).__init__(api)
 
     def load_review(self, review_data):
         pass # TODO: implement
 
 
-class Feature(GogObject):
+class Feature(GogObject, object):
     def __init__(self, api, name, slug):
-        super().__init__(api)
+        super(Feature, self).__init__(api)
         self.name = name
         self.slug = slug
 
     def __repr__(self):
         return self.simple_repr(["name", "slug"])
 
-class Genre(GogObject):
+class Genre(GogObject, object):
     def __init__(self, api, name, slug):
-        super().__init__(api)
+        super(Genre, self).__init__(api)
         self.name = name
         self.slug = slug
 
     def __repr__(self):
         return self.simple_repr(["name", "slug"])
 
-class Language(GogObject):
+class Language(GogObject, object):
     def __init__(self, api, name, isocode):
-        super().__init__(api)
+        super(Language, self).__init__(api)
         self.name = name
         self.isocode = isocode
 

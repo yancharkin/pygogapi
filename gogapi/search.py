@@ -1,8 +1,8 @@
 from gogapi.base import GogObject
 
-class SearchResult(GogObject):
+class SearchResult(GogObject, object):
     def __init__(self, api, query, search_data):
-        super().__init__(api)
+        super(SearchResult, self).__init__(api)
         self.query = query
         self.load_search(search_data)
 

@@ -5,9 +5,9 @@ from gogapi.base import GogObject
 
 
 
-class Download(GogObject):
+class Download(GogObject, object):
     def __init__(self, api, category, data):
-        super().__init__(api)
+        super(Download, self).__init__(api)
         self.category = category
         self.load_galaxy(data)
 
@@ -30,9 +30,9 @@ class Download(GogObject):
         return sum(f.size for f in self.files)
 
 
-class File(GogObject):
+class File(GogObject, object):
     def __init__(self, api, data):
-        super().__init__(api)
+        super(File, self).__init__(api)
         self.load_galaxy(data)
 
     def load_galaxy(self, data):
